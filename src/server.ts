@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import userRoute from './routes/userRoute';
 
 class Server {
     private app: express.Application;
@@ -14,8 +15,9 @@ class Server {
     }
 
     public routes() {
-        this.app.get('/', (req: Request, res: Response) => {
-            res.send("Hello, class!");
+        this.app.use('/user', userRoute);
+        this.app.get('/', (req, res) =>{
+            res.send("API ON");
         });
     }
 
