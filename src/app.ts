@@ -1,6 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import http from 'http';
-import { appendFile } from 'fs';
 
 import userRoute from './routes/userRoute';
 
@@ -13,7 +11,7 @@ app.use(express.json());
 
 app.use('/user', userRoute);
 
-app.use((error: any, req: Request, res: Response, next: any) => {
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
     if (error.message === 'User already exists') {
         return res.status(409).send(error.message);
     }
