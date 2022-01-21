@@ -70,7 +70,7 @@ describe('Users tests', () => {
 
     });
 
-    it('should not update a users', async () => {
+    it('should not update a user', async () => {
         const user = {
             id: 1
         };
