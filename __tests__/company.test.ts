@@ -1,113 +1,103 @@
-import crypto from 'crypto';
 import request from 'supertest';
 
 import { CompanyController } from '../src/controllers/companyController';
+import { UserController } from '../src/controllers/userController';
 
-const generateString = () => {
-    return crypto.randomBytes(20).toString('hex');
+let company = {
+    corporateName: 'Umbrela Corporation',
+    fancyName: 'Umbrela Corporation',
+    cnpjCpf: '48358722000149',
+    idAddress: 0
 };
-const generateNumber = () => {
-    return Number(Math.floor(Math.random() * 11111) + 99999);
-};
-
-const companyData = () => {
-    return {
-        corporateName: generateString(),
-        fancyName: generateString(),
-        cnpjCpf: String(generateNumber()),
-        idAddress: generateNumber(),
-        idUser: generateNumber()
-    }
-};
-
+const userData = { name: 'Nêmesis', email: 'nemesis@hotmail.com' };
 const api = 'http://localhost:3000';
-const companyController = new CompanyController();
 
 describe('Company tests', () => {
+    const userController = new UserController();
+    const companyController = new CompanyController();
 
     it('should get company', async () => {
-        const company1 = await companyController.saveCompany(companyData());
-        const company2 = await companyController.saveCompany(companyData());
+        const { id: idUser } = await userController.saveUser(userData);
 
-        await request(api)
-            .get('/company')
-            .expect(200)
-            .expect(async (res) => {
-                const companies = res.body;
-                expect(companies).toHaveLength(2);
+        const savedCompany = await companyController.saveCompany({ ...company, idUser: idUser });
+        const companies = await request(api).get('/company');
 
-                await companyController.deleteCompany(company1.id);
-                await companyController.deleteCompany(company2.id);
-            });
+        expect(companies.status).toBe(200)
+        expect(companies.body).toHaveLength(1);
+
+        await companyController.deleteCompany(savedCompany.id);
+        await userController.deleteUser(idUser);
     });
 
     it('should save a company', async () => {
-        const company = companyData();
+        const { id: idUser } = await userController.saveUser(userData);
+        const companyData = { ...company, idUser: idUser };
 
-        await request(api)
-            .post('/company')
-            .send(companyData())
-            .expect(201)
-            .expect(async (res) => {
-                res.body.corporate_name = company.corporateName;
-                res.body.fancy_name = company.fancyName;
-                res.body.cnpj_cpf = company.cnpjCpf;
-                res.body.id_address = company.idAddress;
-                res.body.id_user = company.idUser;
+        const savedCompany = await request(api).post('/company').send(companyData);
 
-                await companyController.deleteCompany(res.body.id);
-            });
+        expect(savedCompany.status).toBe(201);
+        expect(savedCompany.body.corporate_name).toBe(companyData.corporateName);
+        expect(savedCompany.body.fancy_name).toBe(companyData.fancyName);
+        expect(savedCompany.body.cnpj_cpf).toBe(companyData.cnpjCpf);
+        expect(savedCompany.body.id_address).toBe(companyData.idAddress);
+        expect(savedCompany.body.id_user).toBe(companyData.idUser);
+
+        await companyController.deleteCompany(savedCompany.body.id);
+        await userController.deleteUser(idUser);
     });
 
-
     it('should not save a company', async () => {
-        const data = companyData();
-        var companyId: any = 0;
+        const { id: idUser } = await userController.saveUser(userData);
+        const companyData = { ...company, idUser: idUser };
 
-        await request(api).post('/company').send(data).then((res) => companyId = res.body.id);
+        const savedCompany = await request(api).post('/company').send(companyData);
         await request(api)
             .post('/company')
-            .send(data)
+            .send(companyData)
             .expect(409);
 
-        await companyController.deleteCompany(companyId);
+        await companyController.deleteCompany(savedCompany.body.id);
+        await userController.deleteUser(idUser);
     });
 
     it('should update a company', async () => {
-        const company = companyData();
-       
-        let companyResponse: any = {};
-        await request(api).post('/company').send(companyData()).then((res) => companyResponse = res.body);
+        const { id: idUser } = await userController.saveUser(userData);
+        const companyData = { ...company, idUser: idUser };
+        const companyDataToUpdate = { fancy_name: 'Nome Fantasia', corporate_name: 'Razão social' };
+
+        const savedCompany = await request(api).post('/company').send(companyData);
 
         await request(api)
-            .put(`/company/${companyResponse.id}`)
-            .send({ fancy_name: company.fancyName, corporate_name: company.corporateName })
-            .expect(204)
-            .expect(async (res) => {
-                const updatedCompany = await companyController.getCompanyById(companyResponse.id);
-                updatedCompany.corporate_name = company.corporateName;
-                updatedCompany.fancy_name = company.fancyName;
-                await companyController.deleteCompany(companyResponse.id);
-            });
+            .put(`/company/${savedCompany.body.id}`)
+            .send(companyDataToUpdate)
+            .expect(204);
+
+        const updatedCompany = await companyController.getCompanyById(savedCompany.body.id);
+
+        expect(updatedCompany.corporate_name).toBe(companyDataToUpdate.corporate_name);
+        expect(updatedCompany.fancy_name).toBe(companyDataToUpdate.fancy_name);
+
+        await companyController.deleteCompany(savedCompany.body.id);
+        await userController.deleteUser(idUser);
     });
 
     it('should not update a company', async () => {
-        const company = {
-            id: 1
-        };
+        const company = { id: 1 };
         await request(api).put(`/company/${company.id}`).send(company).then(async (response) => {
             expect(response.status).toBe(404);
         });
     });
 
     it('should delete a company', async () => {
-        const company = await companyController.saveCompany(companyData());
+        const { id: idUser } = await userController.saveUser(userData);
+        const companyData = { ...company, idUser: idUser };
+        const savedCompany = await companyController.saveCompany(companyData);
 
-        await request(api)
-            .delete(`/company/${company.id}`)
-            .expect(204);
+        await request(api).delete(`/company/${savedCompany.id}`).expect(204);
 
         const companies = await companyController.getCompanies();
         expect(companies).toHaveLength(0);
+
+        await userController.deleteUser(idUser);
     });
 });

@@ -1,21 +1,21 @@
 import { Request, Response, Router } from 'express';
-import { CompanyController } from '../controllers/companyController';
+import { ClientController } from '../controllers/clientController';
 
-const companyController = new CompanyController();
+const clientController = new ClientController();
 const router = Router();
 
 router.get('/', async (req: Request, res: Response, next) => {
     try {
-        const response = await companyController.getCompanies();
+        const response = await clientController.getClients();
         res.status(200).json(response);
     } catch (e) {
         next(e);
     }
 });
 
-router.get('/:id', async (req: Request, res: Response, next) => {
+router.get('/:id', async (req: Request, res: Response, next) =>{
     try {
-        const response = await companyController.getCompanyById(Number(req.params.id));
+        const response = await clientController.getClientById(Number(req.params.id));
         res.json(response);
     } catch (e) {
         next(e);
@@ -24,7 +24,7 @@ router.get('/:id', async (req: Request, res: Response, next) => {
 
 router.post('/', async (req: Request, res: Response, next) => {
     try {
-        const response = await companyController.saveCompany(req.body);
+        const response = await clientController.saveClient(req.body);
         res.status(201).json(response);
     } catch (e: any) {
         next(e);
@@ -33,7 +33,7 @@ router.post('/', async (req: Request, res: Response, next) => {
 
 router.put('/:id', async (req: Request, res: Response, next) => {
     try {
-        await companyController.updateCompany(Number(req.params.id), req.body);
+        await clientController.updateClient(Number(req.params.id), req.body);
         res.status(204).end();
     } catch (e: any) {
         next(e);
@@ -41,8 +41,8 @@ router.put('/:id', async (req: Request, res: Response, next) => {
 });
 
 
-router.delete('/:id', async function (req: Request, res: Response) {
-    const response = await companyController.deleteCompany(Number(req.params.id));
+router.delete('/:id', async (req: Request, res: Response) => {
+    const response = await clientController.deleteClient(Number(req.params.id));
     res.status(204).json(response);
 });
 

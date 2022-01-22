@@ -11,7 +11,7 @@ export class CompanyController {
 
     async getCompanyById(id: number) {
         const company = await companyData.getCompanyById(id);
-        if (!company) throw new Error('User not found');
+        if (!company) throw new Error('Company not found');
         return company;
     };
 

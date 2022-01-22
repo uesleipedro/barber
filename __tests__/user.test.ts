@@ -66,8 +66,6 @@ describe('Users tests', () => {
                     await userController.deleteUser(response.body.id);
                 });
             });
-
-
     });
 
     it('should not update a user', async () => {

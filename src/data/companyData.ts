@@ -24,9 +24,16 @@ export class CompanyData {
     };
 
     updateCompany(id: number, company: Company) {
+        const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
-        return db.none('UPDATE barber.company SET corporate_name = $1, fancy_name = $2, cnpj_cpf = $3, id_address = $4, id_user = $5 WHERE id = $5',
-            [company.corporateName, company.fancyName, company.cnpjCpf, company.idAddress, company.idUser, id]);
+        let fields = '';
+        Object.keys(company).map((field, index) => { fields += `${camelToSnakeCase(field)} = $${index + 1},` });
+        fields = fields.slice(0, -1);
+
+        let values = Object.values(company);
+        values.push(id);
+
+        return db.none(`UPDATE barber.company SET ${fields} WHERE id = $${values.length}`, values);
     };
 
     deleteCompany(id: number) {
