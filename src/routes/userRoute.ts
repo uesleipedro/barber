@@ -15,7 +15,7 @@ router.get('/', async function (req: Request, res: Response, next) {
 
 router.get('/:id', async function (req: Request, res: Response, next) {
     try {
-        const response = await userController.getUserById(req.params.id);
+        const response = await userController.getUserById(Number(req.params.id));
         res.json(response);
     } catch (e) {
         next(e);
@@ -33,7 +33,7 @@ router.post('/', async function (req: Request, res: Response, next) {
 
 router.put('/:id', async function (req: Request, res: Response, next) {
     try {
-        await userController.updateUser(req.params.id, req.body);
+        await userController.updateUser(Number(req.params.id), req.body);
         res.status(204).end();
     } catch (e: any) {
         next(e);
@@ -42,7 +42,7 @@ router.put('/:id', async function (req: Request, res: Response, next) {
 
 
 router.delete('/:id', async function (req: Request, res: Response) {
-    const response = await userController.deleteUser(req.params.id);
+    const response = await userController.deleteUser(Number(req.params.id));
     res.status(204).json(response);
 });
 

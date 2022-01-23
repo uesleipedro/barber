@@ -1,3 +1,4 @@
+import { User } from './../utils/types';
 import { UserData } from '../data/userData';
 
 const userData = new UserData();
@@ -8,24 +9,24 @@ export class UserController {
         return userData.getUsers();
     };
 
-    async getUserById(id: any) {
+    async getUserById(id: number) {
         const user = await userData.getUserById(id);
         if (!user) throw new Error('User not found');
         return user;
     };
 
-    async saveUser(user: any) {
+    async saveUser(user: User) {
         const existingUser = await userData.getUserByEmail(user.email);
-        if(existingUser) throw new Error('User already exists');
+        if (existingUser) throw new Error('User already exists');
         return userData.saveUser(user);
     };
 
-    async updateUser(id: any, user: any) {
+    async updateUser(id: number, user: User) {
         await this.getUserById(id);
         return userData.updateUser(id, user);
     };
 
-    deleteUser(id: any) {
+    deleteUser(id: number) {
 
         return userData.deleteUser(id);
     };

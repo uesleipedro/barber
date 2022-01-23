@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import userRoute from './routes/userRoute';
 import clientRoute from './routes/clientRoute';
 import companyRoute from './routes/companyRoute';
+import scheduleRoute from './routes/scheduleRoute';
 
 export const app = express();
 
@@ -10,6 +11,7 @@ app.use(express.json());
 app.use('/user', userRoute);
 app.use('/client', clientRoute);
 app.use('/company', companyRoute);
+app.use('/schedule', scheduleRoute);
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
     if (error.message ===
         'User already exists'

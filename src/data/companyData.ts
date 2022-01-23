@@ -12,7 +12,7 @@ export class CompanyData {
         return db.oneOrNone('SELECT * FROM barber.company WHERE id = $1', [id]);
     };
 
-    getCompanyByCnpjCpf(cnpjCpf: any) {
+    getCompanyByCnpjCpf(cnpjCpf: string) {
 
         return db.oneOrNone('SELECT * FROM barber.company WHERE cnpj_cpf = $1', [cnpjCpf]);
     };
