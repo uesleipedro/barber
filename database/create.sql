@@ -8,6 +8,14 @@ CREATE TABLE barber.user(
     updated_at TIMESTAMP
 );
 
+CREATE TABLE barber.professional(
+    id serial PRIMARY KEY NOT NULL,
+    name character varying NOT NULL,
+    email character varying NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP
+);
+
 CREATE TABLE barber.client(
     id serial PRIMARY KEY,
     name character varying NOT NULL NOT NULL,
@@ -32,6 +40,15 @@ CREATE TABLE barber.company(
         NOT VALID
 );
 
+CREATE TABLE barber.service(
+    id serial PRIMARY KEY,
+    describe character varying NOT NULL UNIQUE,
+    "time" time without time zone,
+	price character varying NOT NULL,
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP
+);
+
 CREATE TABLE barber.schedule (
 	id serial NOT NULL,
 	id_client INTEGER NOT NULL,
@@ -48,4 +65,6 @@ CREATE TABLE barber.schedule (
         REFERENCES barber."client" (id) MATCH SIMPLE,
     CONSTRAINT id_company_fkey FOREIGN KEY (id_company)
         REFERENCES barber."company" (id) MATCH SIMPLE  
+    CONSTRAINT id_service_fkey FOREIGN KEY (id_service)
+        REFERENCES barber.service (id) MATCH SIMPLE
 );

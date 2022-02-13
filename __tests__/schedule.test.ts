@@ -1,5 +1,6 @@
 import request from 'supertest';
 
+import { ServiceController } from './../src/controllers/serviceController';
 import { ScheduleController } from '../src/controllers/scheduleController';
 import { ClientController } from '../src/controllers/clientController';
 import { CompanyController } from '../src/controllers/companyController';
@@ -10,12 +11,12 @@ const scheduleController = new ScheduleController();
 const clientController = new ClientController();
 const companyController = new CompanyController();
 const userController = new UserController();
+const serviceController = new ServiceController();
 
 describe('Schedule tests', () => {
     const scheduleData = {
         startDateTime: new Date(),
         endDateTime: new Date(),
-        idService: 1,
         idBarber: 1,
         idPaymentMethod: 1,
         totalPaymentService: 200.00,
@@ -27,6 +28,11 @@ describe('Schedule tests', () => {
         cnpjCpf: '48358722000149',
         idAddress: 0
     };
+    const serviceData = {
+        describe: 'Corte na tesoura',
+        time: '00:45:00',
+        price: 25.9
+    };
     const clientData = { name: 'Nêmesis', email: 'nemesis@hotmail.com' };
     const userData = { name: 'Nêmesis', email: 'nemesis@hotmail.com' };
     const mock: any = {};
@@ -35,10 +41,11 @@ describe('Schedule tests', () => {
         mock.client = await clientController.saveClient(clientData);
         mock.user = await userController.saveUser(userData);
         mock.company = await companyController.saveCompany({ ...companyData, idUser: mock.user.id });
+        mock.service = await serviceController.saveService(serviceData);
     });
 
     it('should get schedule', async () => {
-        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id };
+        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id, idService: mock.service.id };
         await scheduleController.saveSchedule(scheduleDataToSubmit);
 
         const receivedSchedule = await request(api).get('/schedule').expect(200);
@@ -49,7 +56,7 @@ describe('Schedule tests', () => {
     });
 
     it('should save a schedule', async () => {
-        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id };
+        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id, idService: mock.service.id };
         const savedSchedule = await request(api).post('/schedule').send(scheduleDataToSubmit);
 
         expect(savedSchedule.status).toBe(201);
@@ -72,7 +79,7 @@ describe('Schedule tests', () => {
     // });
 
     it('should update a schedule', async () => {
-        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id };
+        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id, idService: mock.service.id };
         const savedSchedule = await request(api).post('/schedule').send(scheduleDataToSubmit);
 
         const scheduleToUpdate = { idPaymentMethod: 1, idBarber: 2 };
@@ -99,7 +106,7 @@ describe('Schedule tests', () => {
     // });
 
     it('should delete a schedule', async () => {
-        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id };
+        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id, idService: mock.service.id };
         const schedule = await scheduleController.saveSchedule(scheduleDataToSubmit);
 
         await request(api).delete(`/schedule/${schedule.id}`).then((response) => {
@@ -115,5 +122,6 @@ describe('Schedule tests', () => {
         await companyController.deleteCompany(mock.company.id);
         await userController.deleteUser(mock.user.id);
         await clientController.deleteClient(mock.client.id);
+        await serviceController.deleteService(mock.service.id);
     })
 });

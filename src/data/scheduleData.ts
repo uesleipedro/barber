@@ -21,7 +21,7 @@ export class ScheduleData {
         const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
         let fields = '';
-        Object.keys(schedule).map((field, index) => { fields += `${camelToSnakeCase(field)},` });
+        Object.keys(schedule).map((field) => { fields += `${camelToSnakeCase(field)},` });
         fields = fields.slice(0, -1);
         const values = Object.values(schedule);
         
