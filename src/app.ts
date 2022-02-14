@@ -22,6 +22,7 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
         || error.message === 'Company already exists'
         || error.message === 'Client already exists'
         || error.message === 'Service already exists'
+        || error.message === 'Professional already exists'
     ) {
         return res.status(409).send(error.message);
     }
@@ -31,6 +32,7 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
         || error.message === 'Company not found'
         || error.message === 'Client not found'
         || error.message === 'Service not found'
+        || error.message === 'Professional not found'
     ) {
         return res.status(404).send(error.message);
     }

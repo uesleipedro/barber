@@ -67,4 +67,6 @@ CREATE TABLE barber.schedule (
         REFERENCES barber."company" (id) MATCH SIMPLE  
     CONSTRAINT id_service_fkey FOREIGN KEY (id_service)
         REFERENCES barber.service (id) MATCH SIMPLE
+    CONSTRAINT id_service_fkey FOREIGN KEY (id_service)
+        REFERENCES barber.service (id) MATCH SIMPLE
 );

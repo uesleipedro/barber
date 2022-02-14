@@ -8,7 +8,7 @@ const serviceController = new ServiceController();
 
 describe('Service tests', () => {
     const serviceData = {
-        describe: 'Corte na tesoura',
+        describe: 'Corte na tesoura - service',
         time: '00:45:00',
         price: 25.9
     };
@@ -78,7 +78,7 @@ describe('Service tests', () => {
         });
     });
 
-    it('should delete a service', async () => {
+    it.only('should delete a service', async () => {
         const service = await serviceController.saveService(serviceData);
 
         await request(api).delete(`/service/${service.id}`).then((response) => {

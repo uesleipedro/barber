@@ -1,5 +1,6 @@
 import request from 'supertest';
 
+import { ProfessionalController } from './../src/controllers/professionalController';
 import { ServiceController } from './../src/controllers/serviceController';
 import { ScheduleController } from '../src/controllers/scheduleController';
 import { ClientController } from '../src/controllers/clientController';
@@ -12,12 +13,12 @@ const clientController = new ClientController();
 const companyController = new CompanyController();
 const userController = new UserController();
 const serviceController = new ServiceController();
+const professionalController = new ProfessionalController();
 
 describe('Schedule tests', () => {
     const scheduleData = {
         startDateTime: new Date(),
         endDateTime: new Date(),
-        idBarber: 1,
         idPaymentMethod: 1,
         totalPaymentService: 200.00,
         idStatus: 1
@@ -29,12 +30,13 @@ describe('Schedule tests', () => {
         idAddress: 0
     };
     const serviceData = {
-        describe: 'Corte na tesoura',
+        describe: 'Corte na tesoura - schedule',
         time: '00:45:00',
         price: 25.9
     };
     const clientData = { name: 'Nêmesis', email: 'nemesis@hotmail.com' };
     const userData = { name: 'Nêmesis', email: 'nemesis@hotmail.com' };
+    const professionalData = { name: 'Nêmesis', email: 'nemesis@hotmail.com' };
     const mock: any = {};
 
     beforeAll(async () => {
@@ -42,10 +44,17 @@ describe('Schedule tests', () => {
         mock.user = await userController.saveUser(userData);
         mock.company = await companyController.saveCompany({ ...companyData, idUser: mock.user.id });
         mock.service = await serviceController.saveService(serviceData);
+        mock.professional = await professionalController.saveProfessional(professionalData);
     });
 
     it('should get schedule', async () => {
-        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id, idService: mock.service.id };
+        const scheduleDataToSubmit = {
+            ...scheduleData,
+            idClient: mock.client.id,
+            idCompany: mock.company.id,
+            idService: mock.service.id,
+            idProfessional: mock.professional.id
+        };
         await scheduleController.saveSchedule(scheduleDataToSubmit);
 
         const receivedSchedule = await request(api).get('/schedule').expect(200);
@@ -55,8 +64,14 @@ describe('Schedule tests', () => {
         await scheduleController.deleteSchedule(receivedSchedule.body[0].id);
     });
 
-    it('should save a schedule', async () => {
-        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id, idService: mock.service.id };
+    it.only('should save a schedule', async () => {
+        const scheduleDataToSubmit = {
+            ...scheduleData,
+            idClient: mock.client.id,
+            idCompany: mock.company.id,
+            idService: mock.service.id,
+            idProfessional: mock.professional.id
+        };
         const savedSchedule = await request(api).post('/schedule').send(scheduleDataToSubmit);
 
         expect(savedSchedule.status).toBe(201);
@@ -79,7 +94,13 @@ describe('Schedule tests', () => {
     // });
 
     it('should update a schedule', async () => {
-        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id, idService: mock.service.id };
+        const scheduleDataToSubmit = {
+            ...scheduleData,
+            idClient: mock.client.id,
+            idCompany: mock.company.id,
+            idService: mock.service.id,
+            idProfessional: mock.professional.id
+        };
         const savedSchedule = await request(api).post('/schedule').send(scheduleDataToSubmit);
 
         const scheduleToUpdate = { idPaymentMethod: 1, idBarber: 2 };
@@ -106,7 +127,13 @@ describe('Schedule tests', () => {
     // });
 
     it('should delete a schedule', async () => {
-        const scheduleDataToSubmit = { ...scheduleData, idClient: mock.client.id, idCompany: mock.company.id, idService: mock.service.id };
+        const scheduleDataToSubmit = {
+            ...scheduleData,
+            idClient: mock.client.id,
+            idCompany: mock.company.id,
+            idService: mock.service.id,
+            idProfessional: mock.professional.id
+        };
         const schedule = await scheduleController.saveSchedule(scheduleDataToSubmit);
 
         await request(api).delete(`/schedule/${schedule.id}`).then((response) => {
@@ -123,5 +150,6 @@ describe('Schedule tests', () => {
         await userController.deleteUser(mock.user.id);
         await clientController.deleteClient(mock.client.id);
         await serviceController.deleteService(mock.service.id);
-    })
+        await professionalController.deleteProfessional(mock.professional.id);
+    });
 });

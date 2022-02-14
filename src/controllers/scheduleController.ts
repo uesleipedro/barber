@@ -16,7 +16,7 @@ export class ScheduleController {
     };
 
     async saveSchedule(schedule: ScheduleProps) {
-        // const existingSchedule = await scheduleData.getScheduleByCompanyAndId(user.email);
+        // const existingSchedule = await scheduleData.getScheduleById(schedule.id);
         // if (existingUser) throw new Error('User already exists');
         return scheduleData.saveSchedule(schedule);
     };

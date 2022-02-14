@@ -34,7 +34,7 @@ export interface ScheduleProps {
     startDateTime: Date;
     endDateTime: Date;
     idService: number;
-    idBarber: number;
+    idProfessional: number;
     idPaymentMethod: number;
     totalPaymentService: number;
     idStatus: number;

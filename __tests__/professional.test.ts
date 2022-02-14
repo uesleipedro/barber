@@ -12,17 +12,17 @@ describe('Professional tests', () => {
         email: 'ielseu@email.com',
     };
 
-    // it('should get services', async () => {
-    //     const service = await serviceController.saveService(serviceData);
+    it('should get professional', async () => {
+        const professional = await professionalController.saveProfessional(professionalData);
 
-    //     await request(api).get('/service').then((response) => {
-    //         expect(response.status).toBe(200);
-    //         const services = response.body;
-    //         expect(services).toHaveLength(1);
-    //     });
+        await request(api).get('/professional').then((response) => {
+            expect(response.status).toBe(200);
+            const professionals = response.body;
+            expect(professionals).toHaveLength(1);
+        });
 
-    //     await serviceController.deleteService(service.id);
-    // });
+        await professionalController.deleteProfessional(professional.id);
+    });
 
     it('should save a professional', async () => {
 
@@ -36,54 +36,52 @@ describe('Professional tests', () => {
         });
     });
 
-    // it('should not save a services', async () => {
-    //     var serviceId: any = 0;
+    it('should not save a professional', async () => {
+        var professionalId: any = 0;
 
-    //     await request(api).post('/service').send(serviceData).then((res) => serviceId = res.body.id);
-    //     await request(api).post('/service').send(serviceData).then(async (response) => {
-    //         expect(response.status).toBe(409);
-    //         await serviceController.deleteService(serviceId);
-    //     });
-    // });
+        await request(api).post('/professional').send(professionalData).then((res) => professionalId = res.body.id);
+        await request(api).post('/professional').send(professionalData).then(async (response) => {
+            expect(response.status).toBe(409);
+            await professionalController.deleteProfessional(professionalId);
+        });
+    });
 
-    // it('should update a service', async () => {
-    //     await request(api).post('/service').send(serviceData)
-    //         .then(async (response) => {
+    it('should update a professional', async () => {
+        await request(api).post('/professional').send(professionalData)
+            .then(async (response) => {
 
-    //             const describe = 'Barba';
-    //             const time = '00:50:00';
-    //             const price = 10;
+                const name = 'Ueslei Pedro';
+                const email = 'teste@teste.com';
 
-    //             await request(api).put(`/service/${response.body.id}`).send({ describe, time, price }).then(async (response2) => {
-    //                 const updatedService = await serviceController.getServiceById(response.body.id);
+                await request(api).put(`/professional/${response.body.id}`).send({ name, email }).then(async (response2) => {
+                    const updatedProfessisonal = await professionalController.getProfessionalById(response.body.id);
 
-    //                 expect(response2.status).toBe(204);
-    //                 expect(updatedService.describe).toBe(describe);
-    //                 expect(updatedService.time).toBe(time);
-    //                 expect(Number(updatedService.price)).toBe(price);
+                    expect(response2.status).toBe(204);
+                    expect(updatedProfessisonal.name).toBe(name);
+                    expect(updatedProfessisonal.email).toBe(email);
 
-    //                 await serviceController.deleteService(response.body.id);
-    //             });
-    //         });
-    // });
+                    await professionalController.deleteProfessional(response.body.id);
+                });
+            });
+    });
 
-    // it('should not update a service', async () => {
-    //     const service = {
-    //         id: 1
-    //     };
-    //     await request(api).put(`/service/${service.id}`).send(serviceData).then(async (response) => {
-    //         expect(response.status).toBe(404);
-    //     });
-    // });
+    it('should not update a professional', async () => {
+        const professional = {
+            id: 1
+        };
+        await request(api).put(`/professional/${professional.id}`).send(professionalData).then(async (response) => {
+            expect(response.status).toBe(404);
+        });
+    });
 
-    // it('should delete a service', async () => {
-    //     const service = await serviceController.saveService(serviceData);
+    it('should delete a professional', async () => {
+        const professional = await professionalController.saveProfessional(professionalData);
 
-    //     await request(api).delete(`/service/${service.id}`).then((response) => {
-    //         expect(response.status).toBe(204);
-    //     });
+        await request(api).delete(`/professional/${professional.id}`).then((response) => {
+            expect(response.status).toBe(204);
+        });
 
-    //     const services = await serviceController.getServices();
-    //     expect(services).toHaveLength(0);
-    // });
+        const professionals = await professionalController.getProfessionals();
+        expect(professionals).toHaveLength(0);
+    });
 });
